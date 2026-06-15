@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpeechConnect — Find Your Therapist</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       DESIGN TOKENS
+    ============================================= */
+    :root {
+      --teal:        #0D4F5C;
+      --teal-mid:    #166778;
+      --teal-light:  #EAF3F5;
+      --sage:        #4A9E8E;
+      --sage-light:  #E8F5F2;
+      --coral:       #E0705A;
+      --coral-light: #FDF0ED;
+      --bg:          #F7F9F8;
+      --white:       #FFFFFF;
+      --slate-dark:  #1A2730;
+      --slate:       #2C3A47;
+      --slate-mid:   #4A5568;
+      --slate-light: #718096;
+      --border:      #DDE4E1;
+      --border-hover:#B2C8C3;
+      --radius-sm:   6px;
+      --radius-md:   12px;
+      --radius-lg:   20px;
+      --shadow-sm:   0 1px 3px rgba(13,79,92,.06), 0 1px 2px rgba(13,79,92,.04);
+      --shadow-md:   0 4px 16px rgba(13,79,92,.10), 0 2px 6px rgba(13,79,92,.06);
+      --shadow-lg:   0 12px 40px rgba(13,79,92,.14), 0 4px 12px rgba(13,79,92,.08);
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--slate);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4,h5 {
+      font-family: 'Fraunces', Georgia, serif;
+      color: var(--slate-dark);
+      line-height: 1.2;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; }
+    input, select, textarea { font-family: inherit; }
+
+    /* =============================================
+       UTILITIES
+    ============================================= */
+    .hidden   { display: none !important; }
+    .page     { min-height: 100vh; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+    /* =============================================
+       GLOBAL NAV
+    ============================================= */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(247,249,248,.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex; align-items: center;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Fraunces', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--teal);
+      letter-spacing: -.02em;
+    }
+    .nav-logo-icon {
+      width: 34px; height: 34px;
+      background: var(--teal);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-logo-icon svg { width: 18px; height: 18px; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .nav-user-info {
+      display: flex; align-items: center; gap: 10px;
+      font-size: .85rem; color: var(--slate-mid);
+    }
+    .nav-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 600; color: var(--teal);
+    }
+
+    /* =============================================
+       BUTTONS
+    ============================================= */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: .875rem; font-weight: 500;
+      border: 1px solid transparent;
+      transition: all .18s ease;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .btn-primary {
+      background: var(--teal); color: var(--white); border-color: var(--teal);
+    }
+    .btn-primary:hover { background: var(--teal-mid); border-color: var(--teal-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn-outline {
+      background: transparent; color: var(--teal); border-color: var(--border);
+    }
+    .btn-outline:hover { border-color: var(--teal); background: var(--teal-light); }
+    .btn-coral {
+      background: var(--coral); color: #fff; border-color: var(--coral);
+    }
+    .btn-coral:hover { background: #d0604a; border-color: #d0604a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,112,90,.3); }
+    .btn-ghost {
+      background: transparent; color: var(--slate-mid); border-color: transparent;
+    }
+    .btn-ghost:hover { background: var(--teal-light); color: var(--teal); }
+    .btn-sm { padding: 7px 14px; font-size: .8rem; }
+    .btn-lg { padding: 14px 30px; font-size: 1rem; border-radius: var(--radius-md); }
+    .btn-full { width: 100%; }
+
+    /* =============================================
+       FORM ELEMENTS
+    ============================================= */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: .8rem; font-weight: 500;
+      color: var(--slate-mid); text-transform: uppercase; letter-spacing: .06em;
+    }
+    .form-input, .form-select, .form-textarea {
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--slate);
+      font-size: .9rem;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--sage);
+      box-shadow: 0 0 0 3px rgba(74,158,142,.15);
+    }
+    .form-textarea { resize: vertical; min-height: 100px; }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718096' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    .form-hint { font-size: .78rem; color: var(--slate-light); }
+    .form-error { font-size: .78rem; color: var(--coral); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+    /* Role toggle */
+    .role-toggle {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--teal-light);
+      border-radius: var(--radius-md);
+      padding: 4px; gap: 4px;
+    }
+    .role-btn {
+      padding: 11px;
+      border: none; border-radius: 9px;
+      background: transparent; color: var(--slate-mid);
+      font-size: .88rem; font-weight: 500;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .role-btn.active {
+      background: var(--white);
+      color: var(--teal);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+
+    /* Checkbox group */
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .checkbox-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: .8rem; color: var(--slate-mid);
+      cursor: pointer;
+      transition: all .15s;
+      user-select: none;
+    }
+    .checkbox-pill:hover { border-color: var(--sage); color: var(--teal); }
+    .checkbox-pill.active { background: var(--sage-light); border-color: var(--sage); color: var(--teal); font-weight: 500; }
+    .checkbox-pill input { display: none; }
+
+    /* Price range */
+    .range-group { display: flex; align-items: center; gap: 12px; }
+    .range-input-wrap { flex: 1; }
+    .range-inputs { display: flex; align-items: center; gap: 8px; }
+    .range-inputs input { text-align: center; width: 80px; }
+    .range-sep { color: var(--slate-light); font-size: .85rem; }
+
+    /* =============================================
+       CARDS
+    ============================================= */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s, transform .2s, border-color .2s;
+    }
+    .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--border-hover); }
+
+    /* =============================================
+       BADGE
+    ============================================= */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px;
+      border-radius: 100px;
+      font-size: .73rem; font-weight: 500;
+      letter-spacing: .02em;
+    }
+    .badge-teal { background: var(--teal-light); color: var(--teal); }
+    .badge-sage { background: var(--sage-light); color: #2e7d72; }
+    .badge-coral { background: var(--coral-light); color: #b5503c; }
+    .badge-slate { background: #EDF2F7; color: var(--slate-mid); }
+
+    /* =============================================
+       DIVIDER
+    ============================================= */
+    .divider {
+      display: flex; align-items: center; gap: 12px; color: var(--slate-light);
+      font-size: .8rem; margin: 8px 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* =============================================
+       LOADING SPINNER
+    ============================================= */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* =============================================
+       PAGE: LANDING
+    ============================================= */
+    #page-landing {
+      display: flex; flex-direction: column;
+    }
+
+    /* Hero */
+    .hero {
+      padding-top: 64px; /* nav offset */
+      background: linear-gradient(160deg, var(--teal) 0%, #0a3d47 55%, #082e37 100%);
+      min-height: 88vh;
+      display: flex; align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-canvas {
+      position: absolute; inset: 0;
+      opacity: .25;
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 12px 5px 8px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 100px;
+      color: rgba(255,255,255,.85);
+      font-size: .78rem; font-weight: 500;
+      letter-spacing: .04em;
+      margin-bottom: 24px;
+    }
+    .hero-tag-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sage); flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+    .hero h1 {
+      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--sage);
+    }
+    .hero-sub {
+      color: rgba(255,255,255,.7);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      margin-bottom: 36px;
+      max-width: 460px;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex; gap: 28px; margin-top: 48px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+    .hero-stat-val {
+      font-family: 'Fraunces', serif;
+      font-size: 1.9rem; font-weight: 600;
+      color: #fff; line-height: 1;
+      margin-bottom: 4px;
+    }
+    .hero-stat-label { font-size: .78rem; color: rgba(255,255,255,.55); letter-spacing: .05em; }
+
+    /* Waveform visual — the signature element */
+    .hero-visual { display: flex; align-items: center; justify-content: center; }
+    .waveform-wrap {
+      position: relative;
+      width: 100%; max-width: 420px;
+    }
+    .waveform-card {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(10px);
+      padding: 32px 28px;
+    }
+    .waveform-label {
+      font-size: .72rem; color: rgba(255,255,255,.5);
+      letter-spacing: .1em; text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .waveform-svg { width: 100%; display: block; }
+    .waveform-info {
+      margin-top: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .waveform-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--sage) 0%, #2e8b7e 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem; color: #fff; font-weight: 400; flex-shrink: 0;
+    }
+    .waveform-name { font-size: .9rem; color: rgba(255,255,255,.85); font-weight: 500; }
+    .waveform-role { font-size: .75rem; color: rgba(255,255,255,.45); margin-top: 2px; }
+    .waveform-online {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .72rem; color: #6ee7d4; margin-left: auto;
+    }
+    .waveform-online-dot { width: 6px; height: 6px; background: #6ee7d4; border-radius: 50%; animation: pulse 2s infinite; }
+
+    @media (max-width: 860px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { display: none; }
+      .hero { min-height: auto; padding: 100px 0 64px; }
+    }
+
+    /* How it works */
+    .section { padding: 90px 0; }
+    .section-tag {
+      display: inline-block;
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--sage);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.7rem, 3vw, 2.4rem);
+      font-weight: 400; letter-spacing: -.02em;
+      margin-bottom: 14px; color: var(--slate-dark);
+    }
+    .section-sub { color: var(--slate-light); max-width: 520px; line-height: 1.7; }
+    .section-head { margin-bottom: 56px; }
+
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    @media (max-width: 720px) { .steps-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      position: relative;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .step-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .step-num {
+      font-family: 'Fraunces', serif;
+      font-size: 3.5rem; font-weight: 300;
+      color: var(--teal-light);
+      line-height: 1;
+      margin-bottom: 20px;
+      letter-spacing: -.04em;
+    }
+    .step-icon {
+      width: 44px; height: 44px;
+      background: var(--teal-light);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+    }
+    .step-icon svg { width: 20px; height: 20px; }
+    .step-title { font-size: 1.05rem; font-weight: 500; color: var(--slate-dark); margin-bottom: 8px; }
+    .step-desc { font-size: .875rem; color: var(--slate-light); line-height: 1.65; }
+
+    /* Gradient CTA banner */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--teal) 0%, #0f5e6e 100%);
+      border-radius: var(--radius-lg);
+      padding: 60px 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 32px; margin: 0 24px;
+    }
+    .cta-banner-title { font-size: clamp(1.4rem, 2.5vw, 2rem); color: #fff; font-weight: 400; max-width: 480px; letter-spacing: -.02em; }
+    .cta-banner-title em { font-style: italic; color: var(--sage); }
+    @media (max-width: 680px) { .cta-banner { flex-direction: column; padding: 40px 28px; margin: 0 16px; } }
+
+    /* =============================================
+       PAGE: AUTH
+    ============================================= */
+    #page-auth {
+      padding-top: 64px;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+    }
+    .auth-wrap {
+      width: 100%; max-width: 480px;
+      padding: 24px;
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600;
+      color: var(--teal); margin-bottom: 28px;
+    }
+    .auth-logo-icon {
+      width: 32px; height: 32px;
+      background: var(--teal);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .auth-logo-icon svg { width: 16px; height: 16px; }
+    .auth-title { font-size: 1.5rem; font-weight: 400; color: var(--slate-dark); margin-bottom: 6px; }
+    .auth-sub { font-size: .88rem; color: var(--slate-light); margin-bottom: 28px; }
+    .auth-form { display: flex; flex-direction: column; gap: 18px; }
+    .auth-switch { text-align: center; font-size: .85rem; color: var(--slate-light); margin-top: 18px; }
+    .auth-switch a { color: var(--teal); font-weight: 500; cursor: pointer; }
+    .auth-switch a:hover { text-decoration: underline; }
+
+    /* Therapist extra fields */
+    .therapist-fields {
+      border: 1px solid var(--teal-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      background: var(--teal-light);
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .therapist-fields-label {
+      font-size: .75rem; font-weight: 600;
+      color: var(--teal); letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* =============================================
+       PAGE: CLIENT DASHBOARD
+    ============================================= */
+    #page-client {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    .dashboard-hero {
+      background: linear-gradient(135deg, var(--teal) 0%, #0f5e6e 100%);
+      padding: 44px 0 56px;
+    }
+    .dashboard-hero h2 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      color: #fff; font-weight: 300;
+      letter-spacing: -.02em; margin-bottom: 8px;
+    }
+    .dashboard-hero h2 span { font-style: italic; color: var(--sage); }
+    .dashboard-hero p { color: rgba(255,255,255,.6); font-size: .9rem; }
+
+    /* Search + filter layout */
+    .marketplace-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      padding: 32px 0 60px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .marketplace-layout { grid-template-columns: 1fr; }
+      .filters-panel { position: static !important; }
+    }
+
+    /* Filters */
+    .filters-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      position: sticky; top: 80px;
+    }
+    .filters-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .filters-title { font-size: .95rem; font-weight: 600; color: var(--slate-dark); }
+    .filters-reset { font-size: .78rem; color: var(--slate-light); cursor: pointer; border: none; background: none; padding: 0; }
+    .filters-reset:hover { color: var(--coral); }
+    .filter-section { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+    .filter-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .filter-label { font-size: .75rem; font-weight: 600; color: var(--slate-mid); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px; }
+
+    /* Results */
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: gap;
+    }
+    .results-count { font-size: .88rem; color: var(--slate-light); }
+    .results-count strong { color: var(--slate-dark); }
+    .results-sort select { font-size: .82rem; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px; background: var(--white); color: var(--slate-mid); }
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    @media (max-width: 700px) { .results-grid { grid-template-columns: 1fr; } }
+
+    /* Therapist card */
+    .therapist-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s, border-color .2s;
+      display: flex; flex-direction: column;
+    }
+    .therapist-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--border-hover); }
+    .therapist-card-top {
+      padding: 22px 22px 16px;
+      background: linear-gradient(135deg, #f0f8f8 0%, #f7faf9 100%);
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .therapist-avatar-wrap { position: relative; flex-shrink: 0; }
+    .therapist-avatar {
+      width: 62px; height: 62px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem; font-weight: 400; color: #fff;
+    }
+    .therapist-status {
+      position: absolute; bottom: -2px; right: -2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #48bb78;
+      border: 2px solid var(--white);
+    }
+    .therapist-card-meta { flex: 1; min-width: 0; }
+    .therapist-name { font-size: 1rem; font-weight: 500; color: var(--slate-dark); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .therapist-credentials { font-size: .78rem; color: var(--slate-light); margin-bottom: 8px; }
+    .therapist-rating {
+      display: flex; align-items: center; gap: 4px;
+      font-size: .78rem; color: var(--slate-mid);
+    }
+    .stars { color: #f6ad55; letter-spacing: 1px; }
+    .therapist-card-body { padding: 18px 22px; flex: 1; }
+    .therapist-bio { font-size: .825rem; color: var(--slate-light); line-height: 1.6; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .therapist-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .therapist-meta-row {
+      display: flex; align-items: center; gap: 14px;
+      font-size: .78rem; color: var(--slate-light);
+    }
+    .therapist-meta-item { display: flex; align-items: center; gap: 5px; }
+    .therapist-meta-item svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .therapist-card-footer {
+      padding: 14px 22px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: #fafcfb;
+    }
+    .therapist-price { font-family: 'Fraunces', serif; }
+    .therapist-price-val { font-size: 1.25rem; font-weight: 600; color: var(--teal); }
+    .therapist-price-unit { font-size: .75rem; color: var(--slate-light); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 64px 24px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .empty-icon {
+      width: 60px; height: 60px;
+      background: var(--teal-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .empty-icon svg { width: 26px; height: 26px; color: var(--teal); }
+    .empty-title { font-size: 1.05rem; color: var(--slate-dark); margin-bottom: 6px; }
+    .empty-sub { font-size: .88rem; color: var(--slate-light); }
+
+    /* =============================================
+       PAGE: THERAPIST DASHBOARD
+    ============================================= */
+    #page-therapist {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+    .therapist-dash-hero {
+      background: linear-gradient(135deg, #0a3a29 0%, #0a4d3c 100%);
+      padding: 44px 0 56px;
+    }
+    .therapist-dash-hero h2 { font-size: clamp(1.5rem,3vw,2.1rem); color:#fff; font-weight:300; letter-spacing:-.02em; margin-bottom: 8px; }
+    .therapist-dash-hero h2 span { font-style:italic; color:var(--sage); }
+    .therapist-dash-hero p { color:rgba(255,255,255,.6); font-size:.9rem; }
+
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding: 32px 0; }
+    @media (max-width:720px) { .dash-grid { grid-template-columns: 1fr; } }
+    .dash-stat {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px 22px;
+    }
+    .dash-stat-val { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; color: var(--teal); line-height: 1; margin-bottom: 6px; }
+    .dash-stat-label { font-size: .8rem; color: var(--slate-light); }
+
+    .profile-preview {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px;
+    }
+    .profile-preview-title { font-size: 1rem; font-weight: 600; color: var(--slate-dark); margin-bottom: 24px; }
+    .profile-preview-row { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+    .profile-preview-avatar {
+      width: 72px; height: 72px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif; font-size: 1.8rem; color: #fff; flex-shrink: 0;
+    }
+    .profile-preview-name { font-size: 1.1rem; font-weight: 500; color: var(--slate-dark); margin-bottom: 4px; }
+    .profile-preview-cred { font-size: .8rem; color: var(--slate-light); margin-bottom: 8px; }
+    .profile-preview-detail { font-size: .88rem; color: var(--slate-mid); line-height: 1.6; }
+
+    /* =============================================
+       TOAST NOTIFICATION
+    ============================================= */
+    .toast-wrap {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      display: flex; flex-direction: column; gap: 10px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--slate-dark); color: #fff;
+      padding: 13px 20px;
+      border-radius: var(--radius-md);
+      font-size: .875rem;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp .25s ease;
+      pointer-events: auto;
+    }
+    .toast-success { background: #1a4d3a; border-left: 3px solid #48bb78; }
+    .toast-error   { background: #4d1a1a; border-left: 3px solid var(--coral); }
+    @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(16px); opacity: 0; } }
+    .toast.leaving { animation: slideDown .25s ease forwards; }
+
+    /* =============================================
+       MODAL
+    ============================================= */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(10,30,38,.55);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: fadeIn .2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      animation: scaleIn .2s ease;
+    }
+    @keyframes scaleIn { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 28px 28px 0;
+    }
+    .modal-close {
+      background: none; border: none; color: var(--slate-light);
+      font-size: 1.4rem; line-height: 1; cursor: pointer; padding: 0;
+      transition: color .15s;
+    }
+    .modal-close:hover { color: var(--slate); }
+    .modal-body { padding: 20px 28px 28px; }
+    .modal-avatar-row {
+      display: flex; gap: 18px; align-items: flex-start;
+      padding-bottom: 22px; margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-avatar {
+      width: 72px; height: 72px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif; font-size: 1.9rem; color: #fff; flex-shrink: 0;
+    }
+    .modal-name { font-size: 1.2rem; font-weight: 500; color: var(--slate-dark); margin-bottom: 4px; }
+    .modal-cred { font-size: .82rem; color: var(--slate-light); margin-bottom: 10px; }
+    .modal-rating { display: flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--slate-mid); }
+    .modal-section { margin-bottom: 20px; }
+    .modal-section-title { font-size: .73rem; font-weight: 600; color: var(--slate-mid); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .modal-bio { font-size: .88rem; color: var(--slate-mid); line-height: 1.7; }
+    .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-detail-item { background: var(--bg); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .modal-detail-key { font-size: .72rem; color: var(--slate-light); margin-bottom: 3px; }
+    .modal-detail-val { font-size: .88rem; font-weight: 500; color: var(--slate-dark); }
+    .modal-footer { padding: 18px 28px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .footer {
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: .8rem;
+      color: var(--slate-light);
+    }
+    .footer a { color: var(--teal); }
+
+    /* =============================================
+       ANIMATIONS
+    ============================================= */
+    .fade-in {
+      animation: fadeInUp .35s ease both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     GLOBAL NAV
+============================================================ -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo" onclick="navigate('landing')" style="cursor:pointer">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M8 12s1-2 4-2 4 2 4 2"/>
+          <path d="M9 9h.01M15 9h.01"/>
+        </svg>
+      </div>
+      SpeechConnect
+    </div>
+    <div class="nav-actions" id="nav-actions">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     PAGE: LANDING
+============================================================ -->
+<div id="page-landing" class="page">
+  <!-- Hero -->
+  <section class="hero">
+    <canvas class="hero-canvas" id="waveCanvas"></canvas>
+    <div class="container">
+      <div class="hero-inner">
+        <!-- Left: Copy -->
+        <div>
+          <div class="hero-tag">
+            <span class="hero-tag-dot"></span>
+            Certified Speech & Language Therapists
+          </div>
+          <h1>Find your <em>voice</em>, find your therapist</h1>
+          <p class="hero-sub">
+            SpeechConnect pairs you with accredited speech and language therapists across the UK — for children, adults, and everything in between. Filter by location, budget, and specialism.
+          </p>
+          <div class="hero-ctas">
+            <button class="btn btn-coral btn-lg" onclick="navigate('auth', {mode:'register', role:'client'})">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Find a Therapist
+            </button>
+            <button class="btn btn-outline btn-lg" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3);" onclick="navigate('auth', {mode:'register', role:'therapist'})">
+              Join as a Therapist
+            </button>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-val">200+</div>
+              <div class="hero-stat-label">Verified Therapists</div>
+            </div>
+            <div>
+              <div class="hero-stat-val">4.9★</div>
+              <div class="hero-stat-label">Average Rating</div>
+            </div>
+            <div>
+              <div class="hero-stat-val">48 hrs</div>
+              <div class="hero-stat-label">Avg. Match Time</div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Waveform Card -->
+        <div class="hero-visual">
+          <div class="waveform-wrap">
+            <div class="waveform-card">
+              <div class="waveform-label">Live session in progress</div>
+              <svg class="waveform-svg" viewBox="0 0 360 80" id="waveformSvg">
+                <!-- Bars rendered by JS -->
+              </svg>
+              <div class="waveform-info">
+                <div class="waveform-avatar">S</div>
+                <div>
+                  <div class="waveform-name">Dr. Sarah Okonkwo</div>
+                  <div class="waveform-role">Paediatric SLT · RCSLT Accredited</div>
+                </div>
+                <div class="waveform-online">
+                  <span class="waveform-online-dot"></span> Online
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-tag">How it works</div>
+        <h2 class="section-title">From search to first session<br>in three steps</h2>
+        <p class="section-sub">No referrals. No waiting lists. Just connect with the right specialist for your needs.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <div class="step-title">Search &amp; filter</div>
+          <p class="step-desc">Browse our directory of accredited SLTs. Filter by location, price, age group specialism, and availability to find the right match.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="step-title">Book a consultation</div>
+          <p class="step-desc">View full therapist profiles, read reviews, and send a direct enquiry or book your initial assessment — in-person or online.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.63 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="step-title">Start your journey</div>
+          <p class="step-desc">Begin your personalised therapy programme. Track progress, rebook with ease, and communicate directly through your dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA banner -->
+  <div class="cta-banner">
+    <div class="cta-banner-title">Ready to find the <em>right</em> speech therapist for you?</div>
+    <button class="btn btn-coral btn-lg" onclick="navigate('auth', {mode:'register', role:'client'})">Get started — it's free</button>
+  </div>
+
+  <footer class="footer" style="margin-top:60px">
+    <div class="container">
+      <p>© 2026 SpeechConnect Ltd · <a href="#">Privacy</a> · <a href="#">Terms</a> · Built for RCSLT-accredited therapists across the UK</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================================================
+     PAGE: AUTH (Login / Register)
+============================================================ -->
+<div id="page-auth" class="page hidden">
+  <div class="auth-wrap">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div class="auth-logo" style="justify-content:center">
+        <div class="auth-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M8 12s1-2 4-2 4 2 4 2"/>
+            <path d="M9 9h.01M15 9h.01"/>
+          </svg>
+        </div>
+        SpeechConnect
+      </div>
+    </div>
+    <div class="auth-card">
+      <!-- Tabs -->
+      <div class="role-toggle" id="auth-mode-toggle">
+        <button class="role-btn active" id="btn-login" onclick="setAuthMode('login')">Sign in</button>
+        <button class="role-btn" id="btn-register" onclick="setAuthMode('register')">Register</button>
+      </div>
+
+      <!-- Login form -->
+      <div id="auth-login" style="margin-top:24px">
+        <h2 class="auth-title">Welcome back</h2>
+        <p class="auth-sub">Sign in to your SpeechConnect account.</p>
+        <div class="auth-form" id="login-form">
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" class="form-input" id="login-email" placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="login-password" placeholder="Your password" />
+          </div>
+          <button class="btn btn-primary btn-full" onclick="handleLogin()">Sign in</button>
+        </div>
+        <p class="auth-switch">Don't have an account? <a onclick="setAuthMode('register')">Register here</a></p>
+      </div>
+
+      <!-- Register form -->
+      <div id="auth-register" class="hidden" style="margin-top:24px">
+        <h2 class="auth-title">Create your account</h2>
+        <p class="auth-sub">Join SpeechConnect as a client or therapist.</p>
+        <!-- Role selector -->
+        <div class="role-toggle" style="margin-bottom:20px;" id="role-toggle">
+          <button class="role-btn active" id="btn-role-client" onclick="setRole('client')">I'm a Client</button>
+          <button class="role-btn" id="btn-role-therapist" onclick="setRole('therapist')">I'm a Therapist</button>
+        </div>
+        <div class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First name</label>
+              <input type="text" class="form-input" id="reg-fname" placeholder="Jane" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last name</label>
+              <input type="text" class="form-input" id="reg-lname" placeholder="Smith" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" class="form-input" id="reg-email" placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="reg-password" placeholder="Min. 8 characters" />
+          </div>
+
+          <!-- Therapist-only fields -->
+          <div id="therapist-fields" class="therapist-fields hidden">
+            <div class="therapist-fields-label">Therapist Profile Details</div>
+            <div class="form-group">
+              <label class="form-label">Credentials / Qualifications</label>
+              <input type="text" class="form-input" id="reg-credentials" placeholder="e.g. MSc, RCSLT, HCPC Registered" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Hourly Rate (£)</label>
+                <input type="number" class="form-input" id="reg-rate" placeholder="65" min="1" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-input" id="reg-location" placeholder="London / Remote" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Age Range Specialisation</label>
+              <select class="form-select" id="reg-age-range">
+                <option value="">Select primary specialism…</option>
+                <option value="Toddlers (0–3)">Toddlers (0–3)</option>
+                <option value="Children (4–11)">Children (4–11)</option>
+                <option value="Teenagers (12–17)">Teenagers (12–17)</option>
+                <option value="Adults (18–64)">Adults (18–64)</option>
+                <option value="Seniors (65+)">Seniors (65+)</option>
+                <option value="All ages">All ages</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bio / Summary</label>
+              <textarea class="form-textarea" id="reg-bio" placeholder="Briefly describe your background, approach, and the clients you work best with…"></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="handleRegister()">Create account</button>
+        </div>
+        <p class="auth-switch">Already have an account? <a onclick="setAuthMode('login')">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: CLIENT DASHBOARD
+============================================================ -->
+<div id="page-client" class="page hidden">
+  <div class="dashboard-hero">
+    <div class="container">
+      <h2>Good to see you, <span id="client-name-display">there</span>.</h2>
+      <p>Browse our directory of verified Speech & Language Therapists.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="marketplace-layout">
+      <!-- FILTERS PANEL -->
+      <aside class="filters-panel">
+        <div class="filters-header">
+          <span class="filters-title">Filters</span>
+          <button class="filters-reset" onclick="resetFilters()">Reset all</button>
+        </div>
+
+        <!-- Location filter -->
+        <div class="filter-section">
+          <div class="filter-label">Location</div>
+          <input type="text" class="form-input" id="filter-location" placeholder="City, region, or 'Remote'" oninput="applyFilters()" />
+        </div>
+
+        <!-- Price range filter -->
+        <div class="filter-section">
+          <div class="filter-label">Hourly Rate (£)</div>
+          <div class="range-inputs">
+            <input type="number" class="form-input" id="filter-price-min" placeholder="Min" min="0" oninput="applyFilters()" style="width:80px" />
+            <span class="range-sep">—</span>
+            <input type="number" class="form-input" id="filter-price-max" placeholder="Max" min="0" oninput="applyFilters()" style="width:80px" />
+          </div>
+        </div>
+
+        <!-- Age range filter -->
+        <div class="filter-section">
+          <div class="filter-label">Age Group</div>
+          <div class="checkbox-group" id="filter-age-group">
+            <label class="checkbox-pill" data-age="Toddlers (0–3)">
+              <input type="checkbox" onchange="applyFilters()" /> Toddlers (0–3)
+            </label>
+            <label class="checkbox-pill" data-age="Children (4–11)">
+              <input type="checkbox" onchange="applyFilters()" /> Children (4–11)
+            </label>
+            <label class="checkbox-pill" data-age="Teenagers (12–17)">
+              <input type="checkbox" onchange="applyFilters()" /> Teens (12–17)
+            </label>
+            <label class="checkbox-pill" data-age="Adults (18–64)">
+              <input type="checkbox" onchange="applyFilters()" /> Adults (18–64)
+            </label>
+            <label class="checkbox-pill" data-age="Seniors (65+)">
+              <input type="checkbox" onchange="applyFilters()" /> Seniors (65+)
+            </label>
+          </div>
+        </div>
+
+        <!-- Delivery mode filter -->
+        <div class="filter-section">
+          <div class="filter-label">Delivery Mode</div>
+          <div class="checkbox-group" id="filter-mode">
+            <label class="checkbox-pill" data-mode="Remote">
+              <input type="checkbox" onchange="applyFilters()" /> Remote / Online
+            </label>
+            <label class="checkbox-pill" data-mode="In-Person">
+              <input type="checkbox" onchange="applyFilters()" /> In-Person
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RESULTS PANEL -->
+      <main>
+        <div class="results-header">
+          <div class="results-count"><strong id="results-count-num">0</strong> therapists found</div>
+          <div class="results-sort">
+            <select onchange="applyFilters()">
+              <option>Sort: Recommended</option>
+              <option>Sort: Price low–high</option>
+              <option>Sort: Price high–low</option>
+              <option>Sort: Rating</option>
+            </select>
+          </div>
+        </div>
+        <div class="results-grid" id="results-grid">
+          <!-- Cards injected by JS -->
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: THERAPIST DASHBOARD
+============================================================ -->
+<div id="page-therapist" class="page hidden">
+  <div class="therapist-dash-hero">
+    <div class="container">
+      <h2>Your dashboard, <span id="therapist-name-display">Doctor</span>.</h2>
+      <p>Manage your profile, track enquiries, and grow your practice.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="dash-grid">
+      <div class="dash-stat">
+        <div class="dash-stat-val">0</div>
+        <div class="dash-stat-label">Profile views this week</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-val">0</div>
+        <div class="dash-stat-label">New enquiries</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-val" id="therapist-rate-display">—</div>
+        <div class="dash-stat-label">Your hourly rate</div>
+      </div>
+    </div>
+    <div class="profile-preview">
+      <div class="profile-preview-title">Your public profile preview</div>
+      <div class="profile-preview-row">
+        <div class="profile-preview-avatar" id="th-preview-avatar" style="background:var(--teal)">T</div>
+        <div>
+          <div class="profile-preview-name" id="th-preview-name">—</div>
+          <div class="profile-preview-cred" id="th-preview-cred">—</div>
+          <div class="therapist-tags" id="th-preview-tags" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="profile-preview-detail" id="th-preview-bio" style="color:var(--slate-light);font-size:.85rem;font-style:italic;">No bio added yet.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PROFILE MODAL
+============================================================ -->
+<div id="profile-modal" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-header">
+      <div></div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Injected by JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" onclick="showToast('Enquiry sent! The therapist will be in touch shortly.','success');closeModal()">
+        Send Enquiry
+      </button>
+      <button class="btn btn-coral" onclick="showToast('Booking request sent! Check your email for confirmation.','success');closeModal()">
+        Book Consultation
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOAST CONTAINER
+============================================================ -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+/* ================================================================
+   MOCK DATA — 8 diverse, realistic therapist profiles
+================================================================ */
+const THERAPISTS = [
+  {
+    id: 1,
+    firstName: 'Sarah', lastName: 'Okonkwo',
+    credentials: 'MSc (SLT), RCSLT, HCPC Registered',
+    rate: 90,
+    location: 'London',
+    mode: 'In-Person',
+    ageRange: 'Children (4–11)',
+    ageRangeAlt: ['Toddlers (0–3)', 'Teenagers (12–17)'],
+    bio: 'Paediatric specialist with 12 years of experience working with children with autism spectrum disorder, stuttering, and language delays. I create a warm, playful environment that helps children feel safe and motivated.',
+    specialisms: ['Autism (ASD)', 'Stuttering', 'Language Delay'],
+    rating: 4.9, reviews: 84,
+    avatarColor: '#0D4F5C', initials: 'SO',
+    experience: '12 years',
+    availability: 'Within 2 weeks',
+  },
+  {
+    id: 2,
+    firstName: 'James', lastName: 'Thornton',
+    credentials: 'BSc (Hons) SLT, RCSLT',
+    rate: 65,
+    location: 'Manchester',
+    mode: 'In-Person',
+    ageRange: 'Adults (18–64)',
+    ageRangeAlt: ['Seniors (65+)'],
+    bio: 'Adult-focused therapist specialising in post-stroke aphasia, voice disorders, and dysphagia. I use evidence-based approaches including LSVT and SFA, and work closely with multidisciplinary teams.',
+    specialisms: ['Aphasia', 'Voice Disorders', 'Dysphagia'],
+    rating: 4.8, reviews: 57,
+    avatarColor: '#2D6A4F', initials: 'JT',
+    experience: '9 years',
+    availability: 'Within 1 week',
+  },
+  {
+    id: 3,
+    firstName: 'Priya', lastName: 'Mehta',
+    credentials: 'MSc SLT, Cert HPCYP, RCSLT',
+    rate: 75,
+    location: 'Remote',
+    mode: 'Remote',
+    ageRange: 'Toddlers (0–3)',
+    ageRangeAlt: ['Children (4–11)'],
+    bio: 'Online-only practitioner specialising in early language development and parent-led intervention. I empower families with the tools and confidence to support communication at home between sessions.',
+    specialisms: ['Early Language', 'Parent Coaching', 'Makaton'],
+    rating: 5.0, reviews: 38,
+    avatarColor: '#6B3FA0', initials: 'PM',
+    experience: '7 years',
+    availability: 'This week',
+  },
+  {
+    id: 4,
+    firstName: 'David', lastName: 'Carmichael',
+    credentials: 'BSc SLT, PG Dip Neurological Rehab, RCSLT',
+    rate: 110,
+    location: 'Edinburgh',
+    mode: 'In-Person',
+    ageRange: 'Adults (18–64)',
+    ageRangeAlt: ['Seniors (65+)'],
+    bio: 'Neurological rehabilitation specialist with extensive NHS and private practice experience. My clients include stroke survivors, people with Parkinson\'s disease, and traumatic brain injury patients.',
+    specialisms: ['Neurological Rehab', "Parkinson's (LSVT)", 'TBI Recovery'],
+    rating: 4.7, reviews: 42,
+    avatarColor: '#B5451B', initials: 'DC',
+    experience: '15 years',
+    availability: 'Within 3 weeks',
+  },
+  {
+    id: 5,
+    firstName: 'Amara', lastName: 'Diallo',
+    credentials: 'MSc SLT, Bilingual Specialist, RCSLT',
+    rate: 80,
+    location: 'Birmingham',
+    mode: 'In-Person',
+    ageRange: 'Children (4–11)',
+    ageRangeAlt: ['Teenagers (12–17)'],
+    bio: 'Bilingual and multilingual speech therapist fluent in English and French. I work with children navigating dual-language environments and specialism in selective mutism and social communication difficulties.',
+    specialisms: ['Selective Mutism', 'Bilingual Development', 'Social Communication'],
+    rating: 4.9, reviews: 61,
+    avatarColor: '#8A4A00', initials: 'AD',
+    experience: '8 years',
+    availability: 'Within 2 weeks',
+  },
+  {
+    id: 6,
+    firstName: 'Helen', lastName: 'Watkins',
+    credentials: 'BSc SLT, Cert in Fluency, RCSLT',
+    rate: 70,
+    location: 'Remote',
+    mode: 'Remote',
+    ageRange: 'Teenagers (12–17)',
+    ageRangeAlt: ['Adults (18–64)'],
+    bio: 'Stammering specialist offering confidential, supportive therapy via video call. I draw on CBT techniques and acceptance-based approaches to help clients build confidence in communication across all areas of life.',
+    specialisms: ['Stammering', 'CBT-Integrated', 'Confidence Building'],
+    rating: 4.8, reviews: 29,
+    avatarColor: '#3A6186', initials: 'HW',
+    experience: '6 years',
+    availability: 'This week',
+  },
+  {
+    id: 7,
+    firstName: 'Niall', lastName: 'O\'Brien',
+    credentials: 'MSc SLT, AAC Specialist, RCSLT',
+    rate: 85,
+    location: 'Bristol',
+    mode: 'In-Person',
+    ageRange: 'Children (4–11)',
+    ageRangeAlt: ['Toddlers (0–3)', 'Teenagers (12–17)'],
+    bio: 'Augmentative and Alternative Communication (AAC) specialist with a focus on complex communication needs, cerebral palsy, and PECS implementation. I collaborate closely with schools and families.',
+    specialisms: ['AAC / PECS', 'Cerebral Palsy', 'Complex Needs'],
+    rating: 4.9, reviews: 33,
+    avatarColor: '#1D6A5A', initials: 'NO',
+    experience: '10 years',
+    availability: 'Within 2 weeks',
+  },
+  {
+    id: 8,
+    firstName: 'Lena', lastName: 'Hartmann',
+    credentials: 'BSc SLT, Geriatric Specialist, RCSLT',
+    rate: 60,
+    location: 'Leeds',
+    mode: 'In-Person',
+    ageRange: 'Seniors (65+)',
+    ageRangeAlt: ['Adults (18–64)'],
+    bio: 'Dedicated to supporting older adults with swallowing difficulties, dementia-related communication changes, and voice rehabilitation after surgery. I work with care homes, hospitals, and private clients.',
+    specialisms: ['Dysphagia', 'Dementia Care', 'Post-Op Voice'],
+    rating: 4.6, reviews: 47,
+    avatarColor: '#4A4080', initials: 'LH',
+    experience: '11 years',
+    availability: 'Within 1 week',
+  },
+];
+
+/* ================================================================
+   APP STATE
+================================================================ */
+let state = {
+  currentPage: 'landing',
+  currentUser: null,  // { name, role, ...profile }
+  authMode: 'login',
+  selectedRole: 'client',
+};
+
+/* ================================================================
+   NAVIGATION
+================================================================ */
+function navigate(page, opts = {}) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById(`page-${page}`).classList.remove('hidden');
+  state.currentPage = page;
+
+  if (opts.mode)   setAuthMode(opts.mode);
+  if (opts.role)   setRole(opts.role);
+
+  updateNav();
+  window.scrollTo(0, 0);
+
+  if (page === 'client')    renderResults(THERAPISTS);
+  if (page === 'therapist') renderTherapistDash();
+}
+
+/* ================================================================
+   NAV RENDERING
+================================================================ */
+function updateNav() {
+  const el = document.getElementById('nav-actions');
+  if (!state.currentUser) {
+    el.innerHTML = `
+      <button class="btn btn-ghost btn-sm" onclick="navigate('auth',{mode:'login'})">Sign in</button>
+      <button class="btn btn-primary btn-sm" onclick="navigate('auth',{mode:'register',role:'client'})">Get started</button>
+    `;
+  } else {
+    const initials = state.currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    el.innerHTML = `
+      <div class="nav-user-info">
+        <div class="nav-avatar">${initials}</div>
+        <span style="font-weight:500;color:var(--slate-dark)">${state.currentUser.name}</span>
+        <span class="badge badge-${state.currentUser.role === 'client' ? 'teal' : 'sage'}">${state.currentUser.role}</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Sign out</button>
+    `;
+  }
+}
+
+/* ================================================================
+   AUTH HELPERS
+================================================================ */
+function setAuthMode(mode) {
+  state.authMode = mode;
+  document.getElementById('auth-login').classList.toggle('hidden', mode !== 'login');
+  document.getElementById('auth-register').classList.toggle('hidden', mode !== 'register');
+  document.getElementById('btn-login').classList.toggle('active', mode === 'login');
+  document.getElementById('btn-register').classList.toggle('active', mode === 'register');
+}
+
+function setRole(role) {
+  state.selectedRole = role;
+  document.getElementById('btn-role-client').classList.toggle('active', role === 'client');
+  document.getElementById('btn-role-therapist').classList.toggle('active', role === 'therapist');
+  document.getElementById('therapist-fields').classList.toggle('hidden', role !== 'therapist');
+
+  // Sync checkbox pill active states in the age-filter section when client logs in
+  document.querySelectorAll('#filter-age-group .checkbox-pill').forEach(p => {
+    p.addEventListener('change', () => p.classList.toggle('active', p.querySelector('input').checked));
+  });
+}
+
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-password').value;
+  if (!email || !pwd) { showToast('Please fill in all fields.', 'error'); return; }
+
+  // Demo: check if email matches a registered therapist pattern
+  // In production this would be a real API call
+  const name = email.split('@')[0].replace(/[^a-z]/gi,' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+  // Simulate: if email contains 'therapist' → therapist role
+  const role = email.includes('therapist') ? 'therapist' : 'client';
+
+  state.currentUser = { name, role, email, rate: 75 };
+  showToast(`Welcome back, ${name}!`, 'success');
+
+  if (role === 'therapist') {
+    navigate('therapist');
+  } else {
+    navigate('client');
+    document.getElementById('client-name-display').textContent = name.split(' ')[0];
+  }
+}
+
+function handleRegister() {
+  const fname  = document.getElementById('reg-fname').value.trim();
+  const lname  = document.getElementById('reg-lname').value.trim();
+  const email  = document.getElementById('reg-email').value.trim();
+  const pwd    = document.getElementById('reg-password').value;
+  const role   = state.selectedRole;
+
+  if (!fname || !lname || !email || !pwd) {
+    showToast('Please fill in all required fields.', 'error'); return;
+  }
+  if (pwd.length < 8) {
+    showToast('Password must be at least 8 characters.', 'error'); return;
+  }
+
+  const name = `${fname} ${lname}`;
+  let profile = { name, role, email };
+
+  if (role === 'therapist') {
+    const cred     = document.getElementById('reg-credentials').value.trim();
+    const rate     = parseFloat(document.getElementById('reg-rate').value) || 70;
+    const location = document.getElementById('reg-location').value.trim() || 'Remote';
+    const ageRange = document.getElementById('reg-age-range').value;
+    const bio      = document.getElementById('reg-bio').value.trim();
+
+    if (!cred || !ageRange) {
+      showToast('Please complete all therapist profile fields.', 'error'); return;
+    }
+    profile = { ...profile, credentials: cred, rate, location, ageRange, bio };
+  }
+
+  state.currentUser = profile;
+  showToast(`Account created! Welcome, ${fname}!`, 'success');
+
+  if (role === 'therapist') {
+    navigate('therapist');
+  } else {
+    navigate('client');
+    document.getElementById('client-name-display').textContent = fname;
+  }
+}
+
+function handleLogout() {
+  state.currentUser = null;
+  showToast('You\'ve been signed out.', 'success');
+  navigate('landing');
+}
+
+/* ================================================================
+   FILTER LOGIC
+================================================================ */
+function applyFilters() {
+  const locationQuery = document.getElementById('filter-location').value.trim().toLowerCase();
+  const priceMin      = parseFloat(document.getElementById('filter-price-min').value) || 0;
+  const priceMax      = parseFloat(document.getElementById('filter-price-max').value) || Infinity;
+
+  // Collect active age checkboxes
+  const agePills = document.querySelectorAll('#filter-age-group .checkbox-pill');
+  const selectedAges = [];
+  agePills.forEach(pill => {
+    const cb = pill.querySelector('input');
+    if (cb.checked) {
+      selectedAges.push(pill.dataset.age);
+      pill.classList.add('active');
+    } else {
+      pill.classList.remove('active');
+    }
+  });
+
+  // Collect active mode checkboxes
+  const modePills = document.querySelectorAll('#filter-mode .checkbox-pill');
+  const selectedModes = [];
+  modePills.forEach(pill => {
+    const cb = pill.querySelector('input');
+    if (cb.checked) {
+      selectedModes.push(pill.dataset.mode);
+      pill.classList.add('active');
+    } else {
+      pill.classList.remove('active');
+    }
+  });
+
+  const filtered = THERAPISTS.filter(t => {
+    // Location filter
+    if (locationQuery) {
+      const loc = t.location.toLowerCase();
+      const mode = t.mode.toLowerCase();
+      if (!loc.includes(locationQuery) && !mode.includes(locationQuery)) return false;
+    }
+    // Price filter
+    if (t.rate < priceMin || t.rate > priceMax) return false;
+    // Age filter (if any selected)
+    if (selectedAges.length > 0) {
+      const allAges = [t.ageRange, ...(t.ageRangeAlt || [])];
+      if (!selectedAges.some(a => allAges.includes(a))) return false;
+    }
+    // Mode filter
+    if (selectedModes.length > 0) {
+      if (!selectedModes.includes(t.mode)) return false;
+    }
+    return true;
+  });
+
+  renderResults(filtered);
+}
+
+function resetFilters() {
+  document.getElementById('filter-location').value = '';
+  document.getElementById('filter-price-min').value = '';
+  document.getElementById('filter-price-max').value = '';
+  document.querySelectorAll('#filter-age-group .checkbox-pill input').forEach(cb => { cb.checked = false; });
+  document.querySelectorAll('#filter-mode .checkbox-pill input').forEach(cb => { cb.checked = false; });
+  document.querySelectorAll('.checkbox-pill').forEach(p => p.classList.remove('active'));
+  applyFilters();
+}
+
+/* ================================================================
+   CARD RENDERING
+================================================================ */
+function renderResults(therapists) {
+  const grid = document.getElementById('results-grid');
+  document.getElementById('results-count-num').textContent = therapists.length;
+
+  if (therapists.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v3M11 14h.01"/>
+          </svg>
+        </div>
+        <h4 class="empty-title">No therapists match your filters</h4>
+        <p class="empty-sub">Try adjusting your location, price range, or age group filters.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = therapists.map(t => therapistCard(t)).join('');
+  // Stagger animation
+  grid.querySelectorAll('.therapist-card').forEach((c, i) => {
+    c.style.animationDelay = `${i * 60}ms`;
+    c.classList.add('fade-in');
+  });
+}
+
+function therapistCard(t) {
+  const stars = '★'.repeat(Math.round(t.rating)) + '☆'.repeat(5 - Math.round(t.rating));
+  const specBadges = t.specialisms.map(s =>
+    `<span class="badge badge-slate">${s}</span>`
+  ).join('');
+  const modeColor = t.mode === 'Remote' ? 'badge-sage' : 'badge-teal';
+
+  return `
+    <div class="therapist-card" onclick="openModal(${t.id})">
+      <div class="therapist-card-top">
+        <div class="therapist-avatar-wrap">
+          <div class="therapist-avatar" style="background:${t.avatarColor}">${t.initials}</div>
+          <div class="therapist-status" title="Active"></div>
+        </div>
+        <div class="therapist-card-meta">
+          <div class="therapist-name">${t.firstName} ${t.lastName}</div>
+          <div class="therapist-credentials">${t.credentials}</div>
+          <div class="therapist-rating">
+            <span class="stars" style="font-size:.8rem">${stars}</span>
+            <span>${t.rating} (${t.reviews} reviews)</span>
+          </div>
+        </div>
+      </div>
+      <div class="therapist-card-body">
+        <p class="therapist-bio">${t.bio}</p>
+        <div class="therapist-tags">
+          <span class="badge ${modeColor}">${t.mode}</span>
+          <span class="badge badge-slate">${t.ageRange}</span>
+          ${specBadges}
+        </div>
+        <div class="therapist-meta-row">
+          <span class="therapist-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            ${t.location}
+          </span>
+          <span class="therapist-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            ${t.availability}
+          </span>
+        </div>
+      </div>
+      <div class="therapist-card-footer">
+        <div class="therapist-price">
+          <span class="therapist-price-val">£${t.rate}</span>
+          <span class="therapist-price-unit"> / hour</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openModal(${t.id})">
+          View Profile
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/* ================================================================
+   THERAPIST DASHBOARD RENDERING
+================================================================ */
+function renderTherapistDash() {
+  if (!state.currentUser) return;
+  const u = state.currentUser;
+  document.getElementById('therapist-name-display').textContent = u.name.split(' ')[0];
+  document.getElementById('therapist-rate-display').textContent = u.rate ? `£${u.rate}` : '—';
+
+  const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('th-preview-avatar').textContent = initials;
+  document.getElementById('th-preview-name').textContent = u.name;
+  document.getElementById('th-preview-cred').textContent = u.credentials || 'RCSLT Registered';
+  document.getElementById('th-preview-bio').textContent = u.bio || 'No bio added yet — update your profile to attract clients.';
+  document.getElementById('th-preview-bio').style.fontStyle = u.bio ? 'normal' : 'italic';
+
+  const tagsEl = document.getElementById('th-preview-tags');
+  tagsEl.innerHTML = '';
+  if (u.location) tagsEl.innerHTML += `<span class="badge badge-teal">${u.location}</span>`;
+  if (u.ageRange) tagsEl.innerHTML += `<span class="badge badge-sage">${u.ageRange}</span>`;
+}
+
+/* ================================================================
+   PROFILE MODAL
+================================================================ */
+function openModal(therapistId) {
+  const t = THERAPISTS.find(x => x.id === therapistId);
+  if (!t) return;
+
+  const stars = '★'.repeat(Math.round(t.rating)) + '☆'.repeat(5 - Math.round(t.rating));
+  const allAges = [t.ageRange, ...(t.ageRangeAlt || [])];
+  const ageBadges = allAges.map(a => `<span class="badge badge-sage">${a}</span>`).join(' ');
+  const specBadges = t.specialisms.map(s => `<span class="badge badge-slate">${s}</span>`).join(' ');
+  const modeColor = t.mode === 'Remote' ? 'badge-sage' : 'badge-teal';
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-avatar-row">
+      <div class="modal-avatar" style="background:${t.avatarColor}">${t.initials}</div>
+      <div>
+        <div class="modal-name">${t.firstName} ${t.lastName}</div>
+        <div class="modal-cred">${t.credentials}</div>
+        <div class="modal-rating">
+          <span class="stars">${stars}</span>
+          <strong>${t.rating}</strong>
+          <span style="color:var(--slate-light)">· ${t.reviews} verified reviews</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="badge ${modeColor}">${t.mode}</span>
+          <span class="badge badge-teal">${t.location}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">About</div>
+      <div class="modal-bio">${t.bio}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Specialisms</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${specBadges}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Age Groups</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${ageBadges}</div>
+    </div>
+
+    <div class="modal-detail-grid">
+      <div class="modal-detail-item">
+        <div class="modal-detail-key">Hourly Rate</div>
+        <div class="modal-detail-val" style="color:var(--teal);font-family:'Fraunces',serif;font-size:1.1rem">£${t.rate}</div>
+      </div>
+      <div class="modal-detail-item">
+        <div class="modal-detail-key">Experience</div>
+        <div class="modal-detail-val">${t.experience}</div>
+      </div>
+      <div class="modal-detail-item">
+        <div class="modal-detail-key">Next Available</div>
+        <div class="modal-detail-val">${t.availability}</div>
+      </div>
+      <div class="modal-detail-item">
+        <div class="modal-detail-key">Delivery</div>
+        <div class="modal-detail-val">${t.mode}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('profile-modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('profile-modal')) return;
+  document.getElementById('profile-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+/* ================================================================
+   TOAST NOTIFICATIONS
+================================================================ */
+function showToast(message, type = 'info') {
+  const wrap = document.getElementById('toast-wrap');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  const icon = type === 'success'
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  toast.innerHTML = `${icon}<span>${message}</span>`;
+  wrap.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('leaving');
+    setTimeout(() => toast.remove(), 280);
+  }, 3500);
+}
+
+/* ================================================================
+   ANIMATED WAVEFORM (hero signature element)
+================================================================ */
+function initWaveform() {
+  const svg = document.getElementById('waveformSvg');
+  if (!svg) return;
+
+  const numBars = 48;
+  const svgWidth = 360;
+  const svgHeight = 80;
+  const barW = 4;
+  const gap = (svgWidth - numBars * barW) / (numBars - 1);
+  const bars = [];
+
+  for (let i = 0; i < numBars; i++) {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', i * (barW + gap));
+    rect.setAttribute('width', barW);
+    rect.setAttribute('rx', 2);
+    rect.style.transition = 'height .12s ease, y .12s ease';
+    svg.appendChild(rect);
+    bars.push(rect);
+  }
+
+  let phase = 0;
+  function animate() {
+    phase += 0.06;
+    bars.forEach((bar, i) => {
+      const seed = Math.sin(i * 0.45 + phase) * 0.7 + Math.sin(i * 0.18 - phase * 0.8) * 0.3;
+      const h = Math.max(4, Math.abs(seed) * svgHeight * 0.85 + 4);
+      const isActive = i > 14 && i < 34;
+      const color = isActive ? 'rgba(74,158,142,0.9)' : 'rgba(255,255,255,0.25)';
+      bar.setAttribute('height', h);
+      bar.setAttribute('y', (svgHeight - h) / 2);
+      bar.setAttribute('fill', color);
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ================================================================
+   AMBIENT CANVAS BACKGROUND
+================================================================ */
+function initCanvas() {
+  const canvas = document.getElementById('waveCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const waves = [
+    { amp: 30, freq: 0.008, speed: 0.4, opacity: 0.08 },
+    { amp: 22, freq: 0.012, speed: 0.6, opacity: 0.06 },
+    { amp: 16, freq: 0.006, speed: 0.3, opacity: 0.05 },
+  ];
+
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    waves.forEach(w => {
+      ctx.beginPath();
+      for (let x = 0; x <= canvas.width; x++) {
+        const y = canvas.height / 2 + Math.sin(x * w.freq + t * w.speed) * w.amp;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `rgba(74,158,142,${w.opacity})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ================================================================
+   CHECKBOX PILL INTERACTIVITY
+================================================================ */
+function initCheckboxPills() {
+  document.querySelectorAll('.checkbox-pill').forEach(pill => {
+    const cb = pill.querySelector('input');
+    if (!cb) return;
+    cb.addEventListener('change', () => {
+      pill.classList.toggle('active', cb.checked);
+    });
+  });
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas();
+  initWaveform();
+  initCheckboxPills();
+  updateNav();
+
+  // Demo quick-access: press Shift+D to log in as a demo client instantly
+  document.addEventListener('keydown', e => {
+    if (e.shiftKey && e.key === 'D') {
+      state.currentUser = { name: 'Alex Morgan', role: 'client', email: 'alex@demo.com' };
+      navigate('client');
+      document.getElementById('client-name-display').textContent = 'Alex';
+      showToast('Demo client session started.', 'success');
+    }
+    if (e.shiftKey && e.key === 'T') {
+      state.currentUser = { name: 'Dr. Emma Clarke', role: 'therapist', email: 'emma@demo.com', credentials: 'MSc SLT, RCSLT', rate: 80, location: 'London', ageRange: 'Adults (18–64)', bio: 'Experienced SLT specialising in adult language rehabilitation.' };
+      navigate('therapist');
+      showToast('Demo therapist session started.', 'success');
+    }
+  });
+});
+</script>
+</body>
+</html>
